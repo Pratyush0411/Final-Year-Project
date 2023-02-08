@@ -20,19 +20,33 @@ class Timestamp:
             
         return True
     
+    def __getitem__(self,index):
+        return self.arr[index]
+     
+    def __setitem__(self, key, value):
+        self.arr[key] = value
+    
+    def __str__(self) -> str:
+        return str(self.arr)
+    
     def _change(self, arr: list):
         
         if len(self.arr) == len(arr):
             
             self.arr = arr
+        else:
+            raise NotImplementedError("Length of the array does not match with the lenght of timestamp")
+            
+    def __iter__(self):
+        yield from self.arr
     
     
 
-# t1 = Timestamp(N = 3)
-# t2 = Timestamp(N = 4)
-# t1._change([1,0,1])
+t1 = Timestamp(N = 7)
+t2 = Timestamp(N = 3)
+t1._change([1,0,1,9,7,8,9])
 
-# print(t1>t2)
+print(sum(t1))
         
             
         
