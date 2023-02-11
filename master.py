@@ -80,7 +80,9 @@ class Master:
         for link in iter_list:
 
             chosen_bandwidth = self.__return_real_bandwidth()
-            deliver_msg_num = math.ceil((chosen_bandwidth / 100) * len(self.link_msg_queue[link]))
+            deliver_msg_num = math.ceil(
+                (chosen_bandwidth / 100) * len(self.link_msg_queue[link])
+            )
 
             if deliver_msg_num <= len(self.link_msg_queue[link]):
                 for i in range(deliver_msg_num):

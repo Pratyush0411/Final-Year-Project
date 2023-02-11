@@ -207,7 +207,6 @@ class Node:
             self.__update_timestamp()
             self.__add_phermone_message()
             self.first_run = False
-        
 
     def add_message(self, message: Message):
 
