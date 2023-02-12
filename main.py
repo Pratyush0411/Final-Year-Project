@@ -3,29 +3,37 @@ from master import Master
 from initializer import Initializer
 from ant_colony import Ant_colony
 
-init = Initializer()
-mst = Master(initializer=init,iter_num = 10)
-print("--------------Decentralized Solution-----------------")
+cnt = 0
+loops = 100
 
-print("______________________________________Phase 1__________________________________________")
-mst.phase_1()
-mst.print()
-print("______________________________________Phase 2__________________________________________")
-mst.phase_2()
-mst.print()
 
-print("--------------Centralized solution-------------------")
+for i in range(loops):
+    init = Initializer(num_task=20)
+    mst = Master(initializer=init,iter_num = 15)
+    print(f"Iter {i} Decntralized")
 
-ac = Ant_colony(
-    profits=init.profits, n_ants=10, n_iterations=10, decay=0.2, alpha=0.85, beta=0.5
-)
+    mst.phase_1()
+    
+    mst.phase_2()
 
-ac.main(
-    resource_host_bandwidth=init.resource_host_bandwidth,
-    resource_host_storage=init.resource_host_storage,
-    resource_host_comp=init.resource_host_comp,
-    resource_task_bandwidth=init.resource_task_bandwidth,
-    resource_task_storage=init.resource_task_storage,
-    resource_task_comp=init.resource_task_comp,
-)
-print(ac.best_prof)
+    print(f"Iter {i} Centralized")
+    ac = Ant_colony(
+        profits=init.profits, n_ants=20, n_iterations=150, decay=0.2, alpha=1, beta=0.5
+    )
+    ac.main(
+        resource_host_bandwidth=init.resource_host_bandwidth,
+        resource_host_storage=init.resource_host_storage,
+        resource_host_comp=init.resource_host_comp,
+        resource_task_bandwidth=init.resource_task_bandwidth,
+        resource_task_storage=init.resource_task_storage,
+        resource_task_comp=init.resource_task_comp,
+    )
+    
+    if mst.nodes[0].ant_colony.best_prof >= ac.best_prof:
+        cnt+=1
+        
+    
+print("Percentage of times Decentralized was atleast as good as centralized")
+
+print(f"{(cnt/loops)*100}%")
+    

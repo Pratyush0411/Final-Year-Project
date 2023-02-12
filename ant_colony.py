@@ -39,13 +39,15 @@ class Ant_colony:
 
             self.incremental_phermones[link] += ant.incremental_phermone[link]
 
-    def merge_phermone(self, message_phermone: dict, weight: int):
+    def merge_phermone(self, message_phermone_dict: dict, weight: int, host_ids:list):
 
-        for link in message_phermone:
-
-            self.phermones[link] = ((1 - self.decay) * self.phermones[link]) + (
-                weight * message_phermone[link]
+        for link in self.phermones:
+            inc = 0
+            for host in host_ids:
+                inc +=  (
+                weight * message_phermone_dict[host][link]
             )
+            self.phermones[link] = ((1 - self.decay) * self.phermones[link]) + inc
 
     def main(
         self,
@@ -77,6 +79,7 @@ class Ant_colony:
                     if ant.partial_solution not in tabu_list:
                         tabu_list.append(ant.partial_solution)
                         break
+                    print(ant.partial_solution)
                     print("Repeating iteration for ant due to tabu_list hit")
                 self.__update_incremental_phermone(ant)
 
@@ -134,3 +137,5 @@ ac.main(
     resource_task_storage=resource_task_storage,
     resource_task_comp=resource_task_comp,
 )
+print(ac.best_prof)
+print(ac.best_solution)

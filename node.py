@@ -29,8 +29,8 @@ class Node:
         n_ants=2,
         n_iterations=4,
         decay=0.2,
-        alpha=0.85,
-        beta=0.5,
+        alpha=1,
+        beta=4,
     ) -> None:
         self.num_hosts = N
         self.num_tasks = M
@@ -95,6 +95,9 @@ class Node:
                     ]
                     self.world_info_last_message_timestamp[host_id] = message.timestamp
 
+        self.world_info_phermone[self.host_id] = self.ant_colony.phermones
+        self.world_info_last_message_timestamp[self.host_id] = self.timestamp
+
     def __update_timestamp(self, message: Message = None):
 
         if message is not None:
@@ -115,15 +118,24 @@ class Node:
 
             weight = self.__calculate_weight(message_timestamp=message.timestamp)
         print(f"Weight of the update = {weight}")
-        print("Old phermone value")
-        print(self.ant_colony.phermones)
         print(f"Merging phermone values of {self.host_id} with {message.sent_host}")
+        
+        update_hosts = []
+        for host_id in range(self.num_hosts):
+
+            if host_id in message.phermone_dictionary:
+                if (
+                    message.timestamp[host_id] > self.timestamp[host_id]
+                    and host_id != self.host_id
+                ):
+                    update_hosts.append(host_id)
+                    pass
+        print(f"Update hosts: {update_hosts}")            
         self.ant_colony.merge_phermone(
-            message_phermone=message.phermone_dictionary[message.sent_host],
+            message_phermone_dict=message.phermone_dictionary,
             weight=weight,
+            host_ids=update_hosts
         )
-        print("Updated Phermone value")
-        print(self.ant_colony.phermones)
         print(f"Performing Ant colony Optimization with new phermones")
         self.ant_colony.main(
             resource_host_bandwidth=self.resource_host_bandwidth,
@@ -146,7 +158,7 @@ class Node:
 
             self.ant_colony.best_prof = profit
             self.ant_colony.best_solution = solution
-            self.__update_timestamp(message=message)
+
             self.__add_agreement_message()
 
     def __add_agreement_message(self):

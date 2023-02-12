@@ -3,6 +3,7 @@ from node import Node
 from message import Message
 from initializer import Initializer
 import math
+from const import *
 
 
 class Master:
@@ -16,6 +17,10 @@ class Master:
                 N=self.num_hosts,
                 M=self.num_task,
                 host_id=i,
+                n_ants=2,
+                n_iterations=10,
+                alpha = random.uniform(0.75, 1.5),
+                beta = random.uniform(0.25,3.25),
                 profits=self.initializer.profits,
                 resource_host_storage=self.initializer.resource_host_storage,
                 resource_host_bandwidth=self.initializer.resource_host_bandwidth,
@@ -47,8 +52,8 @@ class Master:
     def __return_real_bandwidth(
         self,
     ):
-        min = 5
-        max = 60
+        min = REAL_BANDWIDTH_MIN
+        max = REAL_BANDWIDTH_MAX
         step = 5
         bandwidth_list = range(min, max + step, step)
 
@@ -58,8 +63,8 @@ class Master:
 
     def __return_chosen_links(self):
 
-        min = 5
-        max = 50
+        min = CHOSEN_LINK_MIN
+        max = CHOSEN_LINK_MAX
         step = 5
         bandwidth_list = range(min, max + step, step)
 
@@ -191,4 +196,5 @@ class Master:
 
             print(node.ant_colony.best_prof)
             print(node.timestamp)
+            print(node.ant_colony.best_solution)
             print(f"---------------------------------------------------------------")

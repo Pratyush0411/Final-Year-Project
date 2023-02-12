@@ -35,8 +35,12 @@ class Ant:
         self.partial_solution = []
         self.incremental_phermone = {}
         self.tot_profits = 0
+        self.deployed = {}
         for link in self.profits:
+            task, host = link
             self.incremental_phermone[link] = 0
+            if task not in self.deployed:
+                self.deployed[task] = 0
 
     def __create_consumed_dictionaries(self, host_list):
 
@@ -91,9 +95,11 @@ class Ant:
                         self.resource_host_comp[host]
                         - self.resource_host_comp_consumed[host]
                     )
+                    and (self.deployed[task] == 0)
                 ):
 
                     links.append((task, host))
+                    
 
         return links
 
@@ -204,8 +210,9 @@ class Ant:
             chosen_index = np.random.choice(range(len(feasable_link_set)), p=prob_list)
 
             chosen_link = feasable_link_set[chosen_index]
+            task, _ = chosen_link
             self.partial_solution.append(chosen_link)
-
+            self.deployed[task] = 1
             self.__update_consumed_matrix(chosen_link=chosen_link)
             self.tot_profits += self.profits[chosen_link]
             feasable_link_set = self.__search_feasible_links()

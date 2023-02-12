@@ -12,14 +12,14 @@ class Initializer:
         self.resource_task_bandwidth = {}
         
         for i in range(n_host):
-            self.resource_host_bandwidth[i] = random.randint(50, 100)
-            self.resource_host_storage[i] = random.randint(80, 200)
-            self.resource_host_comp[i] = random.randint(60, 150)
+            self.resource_host_bandwidth[i] = int(random.uniform(150, 200))
+            self.resource_host_storage[i] = int(random.uniform(150, 250))
+            self.resource_host_comp[i] = int(random.uniform(100, 350))
 
         for i in range(n_task):
-            self.resource_task_bandwidth[i] = random.randint(20, 60)
-            self.resource_task_storage[i] = random.randint(20, 120)
-            self.resource_task_comp[i] = random.randint(20, 90)
+            self.resource_task_bandwidth[i] = int(random.uniform(10, 40))
+            self.resource_task_storage[i] = int(random.uniform(10, 50))
+            self.resource_task_comp[i] = int(random.uniform(10, 80))
 
         self.profits = {}
 
@@ -27,7 +27,7 @@ class Initializer:
 
             for j in range(n_host):
                 link = (i, j)
-                self.profits[link] = random.randint(20, 100)
+                self.profits[link] = int(random.uniform(20, 100))
                 
                 
                 
@@ -39,12 +39,22 @@ class Initializer:
         
         self.__init_profits(n_host=num_host, n_task=num_task)
         
+        # self.graph = {
+        #     1: [0,2,4],
+        #     0: [1,5,4],
+        #     4: [0,1,3],
+        #     5: [0,3,2],
+        #     2: [1,3,5],
+        #     3: [2,4,5]
+        # }
+        
         self.graph = {
-            1: [0,2,4],
-            0: [1,5,4],
-            4: [0,1,3],
-            5: [0,3,2],
-            2: [1,3,5],
-            3: [2,4,5]
+            0:[2,5],
+            1:[4],
+            2:[0,3],
+            3:[2],
+            4:[5,1],
+            5:[0,4]
+            
         }
     
