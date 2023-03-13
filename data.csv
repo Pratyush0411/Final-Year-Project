@@ -1,0 +1,3 @@
+Number of tasks,Number of hosts,Centralized ants,Centralized iter,Distributed ants,Distributed iter,Hyperparameter randomization,Max allowed iter - Distributed,Average time - Centralized,Average time - Distributed,Average profit - Centralized,Average profit - Distributed,Percent of times Distributed better profits,Guarantee Ratio - Centralized,Guarantee ration - Distributed
+10,6,10,50,1,5,False,5.0,0.8919899999999998,0.30623999999999996,839.7,787.5,0.0,100.0,100.0
+10,6,10,50,1,5,True,5.0,0.90595,0.31009999999999993,857.8,851.6,30.0,100.0,100.0

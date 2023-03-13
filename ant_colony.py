@@ -6,7 +6,7 @@ from ant import Ant
 
 class Ant_colony:
     def __init__(
-        self, profits, n_ants, n_iterations, decay, alpha=1, beta=1, init_phermone=0.75
+        self, profits, n_ants, n_iterations, decay, alpha=1, beta=1, init_phermone=0.75, deadline: dict = None, ending_time:dict = None
     ) -> None:
 
         self.n_ants = n_ants
@@ -22,6 +22,8 @@ class Ant_colony:
         self.decay = decay
         self.best_solution = []
         self.best_prof = 0
+        self.deadline = deadline
+        self.ending_time = ending_time
 
     def __update_phermone(
         self,
@@ -73,6 +75,8 @@ class Ant_colony:
                     resource_task_comp=resource_task_comp,
                     alpha=self.alpha,
                     beta=self.beta,
+                    deadline= self.deadline,
+                    ending_time= self.ending_time
                 )
                 while(True):
                     ant.perform_iter(self.phermones)
@@ -90,21 +94,23 @@ class Ant_colony:
 
             self.__update_phermone()
 
-            # print(f"--------Iter {i+1}-----------")
+            # print(f"----------Iter {i+1}-----------")
             # print(self.phermones)
-            # print(f"--------Total Profit-----------")
+            # print(f"Total Profit:")
             # print(self.best_prof)
 
 
 # Test 1
-n_host = 10
-n_task = 8
+n_host = 20
+n_task = 15
 resource_host_storage = {}
 resource_host_comp = {}
 resource_host_bandwidth = {}
 resource_task_storage = {}
 resource_task_comp = {}
 resource_task_bandwidth = {}
+deadline = {}
+phi = 10
 for i in range(n_host):
     resource_host_bandwidth[i] = random.randint(50, 100)
     resource_host_storage[i] = random.randint(80, 200)
@@ -114,19 +120,29 @@ for i in range(n_task):
     resource_task_bandwidth[i] = random.randint(20, 60)
     resource_task_storage[i] = random.randint(20, 120)
     resource_task_comp[i] = random.randint(20, 90)
+    deadline[i] = phi*round(random.uniform(7,10),1)
 
 profits = {}
 phermones = {}
-
+ending_time = {}
 for i in range(n_task):
 
     for j in range(n_host):
         link = (i, j)
         profits[link] = random.randint(20, 100)
+        ending_time[link] = phi*round(random.uniform(4,8),1)
+
+# print("Profit Matrix")
+# print(profits)
+# print("Ending time")
+# print(ending_time)
+# print ("Deadline array")
+# print(deadline)
+
 
 
 ac = Ant_colony(
-    profits=profits, n_ants=10, n_iterations=10, decay=0.2, alpha=0.5, beta=0.5
+    profits=profits, n_ants=10, n_iterations=10, decay=0.3, alpha=0.75, beta=0.5,deadline = deadline,ending_time = ending_time
 )
 
 ac.main(
@@ -137,5 +153,5 @@ ac.main(
     resource_task_storage=resource_task_storage,
     resource_task_comp=resource_task_comp,
 )
-print(ac.best_prof)
-print(ac.best_solution)
+# print(ac.best_prof)
+# print(ac.best_solution)

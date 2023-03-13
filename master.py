@@ -7,20 +7,25 @@ from const import *
 
 
 class Master:
-    def __init_nodes(self):
+    def __init_nodes(self, hp_shuffle:bool):
 
         nodes_map = {}
 
         for i in range(self.num_hosts):
-
+            alpha ,beta = 1,1
+            if hp_shuffle:
+                # print("Randomized alpha and beta")
+                alpha = random.uniform(0.75, 1.5)
+                beta = random.uniform(0.25,4.25)
+            
             nodes_map[i] = Node(
                 N=self.num_hosts,
                 M=self.num_task,
                 host_id=i,
-                n_ants=2,
-                n_iterations=10,
-                alpha = random.uniform(0.75, 1.5),
-                beta = random.uniform(0.25,3.25),
+                n_ants=self.n_ants,
+                n_iterations=self.n_iter,
+                alpha = alpha,
+                beta = beta,
                 profits=self.initializer.profits,
                 resource_host_storage=self.initializer.resource_host_storage,
                 resource_host_bandwidth=self.initializer.resource_host_bandwidth,
@@ -29,18 +34,23 @@ class Master:
                 resource_task_comp=self.initializer.resource_task_comp,
                 resource_task_storage=self.initializer.resource_task_storage,
                 neighbours=self.initializer.graph[i],
+                deadline = self.initializer.deadline,
+                ending_time= self.initializer.ending_time
             )
 
         return nodes_map
 
-    def __init__(self, initializer: Initializer, iter_num=10) -> None:
+    def __init__(self, initializer: Initializer, iter_num=10, hp_shuffle:bool = False, n_ants = 2, n_iter = 10) -> None:
 
         self.num_hosts = initializer.num_hosts
         self.num_task = initializer.num_task
         self.initializer = initializer
-        self.nodes = self.__init_nodes()
         self.link_msg_queue = {}
         self.iter_num = iter_num
+        self.n_ants = n_ants
+        self.n_iter = n_iter
+        self.nodes = self.__init_nodes(hp_shuffle)
+        
 
     def __add_msg_to_receiver_msg_queue(self, message: Message):
 
@@ -69,14 +79,14 @@ class Master:
         bandwidth_list = range(min, max + step, step)
 
         chosen_bandwidth = random.choice(bandwidth_list)
-        print(f"Central queue Bandwidth: {chosen_bandwidth}")
+        # print(f"Central queue Bandwidth: {chosen_bandwidth}")
         link_num = math.ceil((chosen_bandwidth / 100) * len(self.link_msg_queue.keys()))
 
         sampled_links = random.sample(list(self.link_msg_queue.keys()), link_num)
-        print("Sampled list:")
-        print(sampled_links)
-        print("Actual list:")
-        print(self.link_msg_queue.keys())
+        # print("Sampled list:")
+        # print(sampled_links)
+        # print("Actual list:")
+        # print(self.link_msg_queue.keys())
         return sampled_links
 
     def __deliver_messages(self):
@@ -135,19 +145,19 @@ class Master:
             iter_list = list(self.nodes.values())
             random.shuffle(iter_list)
             for node in iter_list:
-                print(
-                    f"-----------Phase 1, Iter {cnt} for host {node.host_id}----------"
-                )
+                # print(
+                #     f"-----------Phase 1, Iter {cnt} for host {node.host_id}----------"
+                # )
                 node.receive()
                 send_msg_list = node.send()
                 for msg in send_msg_list:
 
                     self.__add_msg_to_central_queue(msg)
-                print(
-                    f"---------------------------------------------------------------"
-                )
+                # print(
+                #     f"---------------------------------------------------------------"
+                # )
             self.iter_num -= 1
-            print(self.link_msg_queue)
+            # print(self.link_msg_queue)
             cnt += 1
 
     def __init_phase_2(self):
@@ -177,7 +187,7 @@ class Master:
             iter_list = list(self.nodes.values())
             random.shuffle(iter_list)
             for node in iter_list:
-                print(f"-----------Phase 1, host {node.host_id}----------")
+                # print(f"-----------Phase 2, host {node.host_id}----------")
                 node.agree()
                 send_msg_list = node.send()
 
@@ -185,7 +195,7 @@ class Master:
 
                     self.__add_msg_to_central_queue(msg)
 
-            print(self.count_of_central_queue())
+            # print(self.count_of_central_queue())
 
     def print(
         self,

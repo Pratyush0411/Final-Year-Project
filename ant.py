@@ -14,6 +14,8 @@ class Ant:
         resource_task_bandwidth,
         alpha=1,
         beta=1,
+        ending_time=None,
+        deadline = None
     ) -> None:
 
         self.profits = profits
@@ -28,6 +30,8 @@ class Ant:
         )
         self.alpha = alpha
         self.beta = beta
+        self.ending_time = ending_time
+        self.deadline = deadline
 
     def __init_iter(self, host_list, phermones):
         self.__create_consumed_dictionaries(host_list)
@@ -95,10 +99,14 @@ class Ant:
                         self.resource_host_comp[host]
                         - self.resource_host_comp_consumed[host]
                     )
-                    and (self.deployed[task] == 0)
+                    and 
+                    (self.deployed[task] == 0)
                 ):
-
-                    links.append((task, host))
+                    if (self.ending_time is not None and self.deadline is not None):
+                        if (self.ending_time[(task,host)] <= self.deadline[task]):
+                            links.append((task,host))
+                    else:
+                        links.append((task, host))
                     
 
         return links

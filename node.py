@@ -31,6 +31,8 @@ class Node:
         decay=0.2,
         alpha=1,
         beta=4,
+        deadline:dict=None,
+        ending_time:dict=None
     ) -> None:
         self.num_hosts = N
         self.num_tasks = M
@@ -42,6 +44,8 @@ class Node:
             alpha=alpha,
             beta=beta,
             decay=decay,
+            deadline=deadline,
+            ending_time=ending_time
         )
         self.first_run = True
         self.neighbours = neighbours
@@ -77,8 +81,8 @@ class Node:
 
     def __update_world_info(self, message: Phermone_message):
 
-        print(f"Host timestamp: {self.timestamp.arr}")
-        print(f"Message timestamp: {message.timestamp.arr}")
+        # print(f"Host timestamp: {self.timestamp.arr}")
+        # print(f"Message timestamp: {message.timestamp.arr}")
 
         for host_id in range(self.num_hosts):
 
@@ -88,7 +92,7 @@ class Node:
                     and host_id != self.host_id
                 ):
 
-                    print(f"Updating World information for {host_id}")
+                    # print(f"Updating World information for {host_id}")
 
                     self.world_info_phermone[host_id] = message.phermone_dictionary[
                         host_id
@@ -110,15 +114,15 @@ class Node:
     def __handle_phermone_message(self, message: Phermone_message):
 
         world_info_count = len(self.world_info_last_message_timestamp.keys())
-        print(f"World Info count:{world_info_count}")
-        if world_info_count < 3:
+        # print(f"World Info count:{world_info_count}")
+        if world_info_count < 2:
 
             weight = 1 / self.num_hosts
         else:
 
             weight = self.__calculate_weight(message_timestamp=message.timestamp)
-        print(f"Weight of the update = {weight}")
-        print(f"Merging phermone values of {self.host_id} with {message.sent_host}")
+        # print(f"Weight of the update = {weight}")
+        # print(f"Merging phermone values of {self.host_id} with {message.sent_host}")
         
         update_hosts = []
         for host_id in range(self.num_hosts):
@@ -130,13 +134,13 @@ class Node:
                 ):
                     update_hosts.append(host_id)
                     pass
-        print(f"Update hosts: {update_hosts}")            
+        # print(f"Update hosts: {update_hosts}")            
         self.ant_colony.merge_phermone(
             message_phermone_dict=message.phermone_dictionary,
             weight=weight,
             host_ids=update_hosts
         )
-        print(f"Performing Ant colony Optimization with new phermones")
+        # print(f"Performing Ant colony Optimization with new phermones")
         self.ant_colony.main(
             resource_host_bandwidth=self.resource_host_bandwidth,
             resource_host_storage=self.resource_host_storage,
@@ -232,7 +236,7 @@ class Node:
     def receive(self):
 
         if len(self.message_queue) == 0:
-            print("Message queue is empty!!")
+            # print("Message queue is empty!!")
             self.__handle_no_message()
             return
 
@@ -246,12 +250,12 @@ class Node:
             return
 
         if message.timestamp < self.timestamp:
-            print("Timestamp of the message is very old")
+            # print("Timestamp of the message is very old")
             return
 
         if type(message) is Phermone_message:
 
-            print(f"Receieved Phermone message from {message.sent_host}")
+            # print(f"Receieved Phermone message from {message.sent_host}")
             self.__handle_phermone_message(message)
 
         elif type(message) is First_phase_completed_message:
@@ -268,13 +272,13 @@ class Node:
     def agree(self):
 
         if len(self.message_queue) == 0:
-            print("Message queue is empty!!")
+            # print("Message queue is empty!!")
             return
 
         message = self.message_queue.pop(0)
 
         if type(message) is Agreement_message:
 
-            print(f"Receieved Agreement message from {message.sent_host}")
+            # print(f"Receieved Agreement message from {message.sent_host}")
 
             self.__handle_agreement_message(message)
