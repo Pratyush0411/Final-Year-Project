@@ -81,6 +81,8 @@ headers = [
 ]
 max_time = len(ants_choice)*len(tasks_choice)*len(hosts_choice)*len(iter_choice)*len(decent_max_loops_choice)*len(decent_param_choice)*2
 time_completed = 0
+checkpoint = 0
+checkpoint_loop = 50
 for n_tasks in tasks_choice:
 
     for n_hosts in hosts_choice:
@@ -98,6 +100,8 @@ for n_tasks in tasks_choice:
 
                         for max_loop_percent in decent_max_loops_choice:
                             print(f"================= Percent of experiment completed {(time_completed*100)/max_time}-=========================")
+                            
+                            
                             max_iter = (citer // diter) * max_loop_percent
                             dcnt_better_than_cnt_count = 0
                             loops = 10
@@ -179,9 +183,15 @@ for n_tasks in tasks_choice:
                                 gr_dcent
                             ]
                             expt_data.append(data)
+                            
+                            if (time_completed %  checkpoint_loop == 0):
+                                expt_data_df = pd.DataFrame(expt_data,columns = headers)
+                                expt_data_df.to_csv(f"C:/Users/praty/Desktop/FYP-code/data_{checkpoint}.csv", index = False)
+                                checkpoint +=1
+                                expt_data = []
                             time_completed+= 1
 
 
 expt_data_df = pd.DataFrame(expt_data,columns = headers)
 
-expt_data_df.to_csv("C:/Users/praty/Desktop/FYP-code/data.csv", index = False)
+expt_data_df.to_csv(f"C:/Users/praty/Desktop/FYP-code/data_{checkpoint}.csv", index = False)
